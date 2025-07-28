@@ -1,0 +1,18 @@
+import kotlin.Boolean;
+
+CREATE TABLE note (
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  content TEXT NOT NULL
+);
+
+selectAll:
+SELECT *
+FROM note;
+
+insert:
+INSERT INTO note(content)
+VALUES (?);
+
+delete:
+DELETE FROM note
+WHERE id = ?;
