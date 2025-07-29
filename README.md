@@ -19,7 +19,7 @@
 ## Zauważone błędy
 
 1. Backend miał źle napisany jedyny test sprawdzający, czy backend działa (`/` zwracał błędną odpowiedź).
-2. `CoroutineScope(Dispatchers.Main + job)` w ViewModel powodował, że wyjątek w jednej korutynie anulował wszystkie inne – złe wykorzystanie structured concurrency.
+2. `CoroutineScope(Dispatchers.Main + job)` w ViewModel – złe wykorzystanie structured concurrency.
 3. Aplikacja zamykała się w przypadku braku połączenia z backendem – brak obsługi wyjątków.
 4. Po dodaniu notatki np. "asd", usunięciu jej i ponownym dodaniu tej samej treści – notatka nie była dodawana.
 5. Brak nadawania ID po stronie backendu – przy wielu urządzeniach prowadziłoby to do konfliktów.
