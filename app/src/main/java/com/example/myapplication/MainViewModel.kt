@@ -1,52 +1,35 @@
 package com.example.myapplication
 
 import androidx.lifecycle.ViewModel
-import com.example.ktor_client.ApiClient
-import com.example.models.database.Note
-import com.example.models.dto.CreateNoteBody
-import kotlinx.coroutines.CoroutineScope
+import androidx.lifecycle.viewModelScope
+import com.example.data.models.NoteModel
+import com.example.data.repository.NoteRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.launch
 
-class MainViewModel : ViewModel() {
-    private val client = ApiClient()
-    private val _notes = MutableStateFlow<List<Note>>(emptyList())
-    val notes: StateFlow<List<Note>> = _notes.asStateFlow()
+class MainViewModel(private val repository: NoteRepository) : ViewModel() {
 
-    private val job = Job()
-    private val scope = CoroutineScope(Dispatchers.Main + job)
+    val notes: StateFlow<List<NoteModel>> = repository.notes
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
-        loadNotes()
-    }
-
-    private fun loadNotes() {
-        scope.launch {
-            val notes = client.getNotes()
-            _notes.value = notes.map { Note(it.id, it.content) }
+        viewModelScope.launch(Dispatchers.Default)  {
+            repository.syncNotes()
         }
     }
 
-    fun addNote(note: String) {
-        scope.launch {
-            client.addNote(CreateNoteBody(note))
-            loadNotes()
+    fun addNote(content: String) {
+        viewModelScope.launch(Dispatchers.Default) {
+            repository.addNote(content)
         }
     }
 
-    fun deleteNote(note: Note) {
-        scope.launch {
-            client.deleteNote(note.id)
-            loadNotes()
+    fun deleteNote(note: NoteModel) {
+        viewModelScope.launch(Dispatchers.Default)  {
+            repository.deleteNote(note)
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        job.cancel()
     }
 }

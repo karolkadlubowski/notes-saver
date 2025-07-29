@@ -53,17 +53,19 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import com.example.data.models.NoteModel
 import com.example.models.database.Note
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
-    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             MyApplicationTheme {
+                val viewModel: MainViewModel = koinViewModel()
                 val notes by viewModel.notes.collectAsState()
 
                 val layoutDirection = LocalLayoutDirection.current
@@ -126,17 +128,18 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun DismissableNote(modifier: Modifier = Modifier, note: Note, onDismiss: () -> Unit) {
+fun DismissableNote(modifier: Modifier = Modifier, note: NoteModel, onDismiss: () -> Unit) {
     val density = LocalDensity.current
     val confirmValueChange = { it: SwipeToDismissBoxValue -> it == StartToEnd }
     val positionalThreshold = { it: Float -> it / 3 * 2}
-    val dismissState =
-        rememberSaveable(
-            note.id,
-            saver = SwipeToDismissBoxState.Saver(confirmValueChange, positionalThreshold, density),
-        ) {
-            SwipeToDismissBoxState(Settled, density, confirmValueChange, positionalThreshold)
-        }
+    val dismissState = remember {
+        SwipeToDismissBoxState(
+            initialValue = Settled,
+            density = density,
+            confirmValueChange = confirmValueChange,
+            positionalThreshold = positionalThreshold
+        )
+    }
     val backgroundColor by
         rememberUpdatedState(
             when (dismissState.dismissDirection) {
