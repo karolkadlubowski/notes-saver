@@ -8,6 +8,7 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
+import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -30,6 +31,14 @@ class ApiClient {
                 setBody(note)
             }
         return response.status == HttpStatusCode.Created
+    }
+
+    suspend fun updateFavorite(id: Long, isFavorite: Boolean): Boolean {
+        val response = client.patch("http://10.0.2.2:8080/note/$id/favorite") {
+            contentType(ContentType.Application.Json)
+            setBody(mapOf("isFavorite" to isFavorite))
+        }
+        return response.status == HttpStatusCode.OK
     }
 
     suspend fun deleteNote(id: Long): Boolean {

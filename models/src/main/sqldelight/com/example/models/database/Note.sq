@@ -2,12 +2,12 @@ import kotlin.Boolean;
 
 CREATE TABLE note (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  content TEXT NOT NULL
+  content TEXT NOT NULL,
+  is_favorite INTEGER AS Boolean DEFAULT 0 NOT NULL
 );
 
 selectAll:
-SELECT *
-FROM note;
+SELECT * FROM note;
 
 insert:
 INSERT INTO note(content)
@@ -15,4 +15,9 @@ VALUES (?);
 
 delete:
 DELETE FROM note
+WHERE id = ?;
+
+updateFavorite:
+UPDATE note
+SET is_favorite = ?
 WHERE id = ?;

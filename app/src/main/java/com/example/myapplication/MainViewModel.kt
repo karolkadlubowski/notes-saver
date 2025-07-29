@@ -27,6 +27,14 @@ class MainViewModel(private val repository: NoteRepository) : ViewModel() {
         }
     }
 
+    fun toggleFavorite(note: NoteModel) {
+        viewModelScope.launch(Dispatchers.Default)  {
+            repository.toggleFavorite(
+                NoteModel(note.id, note.content, note.isFavorite)
+            )
+        }
+    }
+
     fun deleteNote(note: NoteModel) {
         viewModelScope.launch(Dispatchers.Default)  {
             repository.deleteNote(note)

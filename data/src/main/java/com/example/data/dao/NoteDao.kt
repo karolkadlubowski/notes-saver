@@ -1,8 +1,6 @@
 package com.example.data.dao
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Upsert
 import com.example.data.models.NoteModel
@@ -17,7 +15,10 @@ interface NoteDao {
     fun getAllNotes(): List<NoteModel>
 
     @Upsert()
-    suspend fun insertAll(notes: List<NoteModel>)
+    suspend fun upsertAll(notes: List<NoteModel>)
+
+    @Query("UPDATE notes SET isFavorite = :isFavorite WHERE id = :id")
+    suspend fun updateFavorite(id: Long, isFavorite: Boolean)
 
     @Query("DELETE FROM notes WHERE id = :id")
     suspend fun deleteById(id: Long)

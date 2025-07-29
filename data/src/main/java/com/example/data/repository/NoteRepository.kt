@@ -17,12 +17,20 @@ class NoteRepository(private val noteDao: NoteDao, private val apiClient: ApiCli
         notesToDelete.forEach {
             noteDao.deleteById(it.id)
         }
-        noteDao.insertAll(remoteNotes.map { NoteModel(it.id, it.content) })
+        noteDao.upsertAll(remoteNotes.map { NoteModel(it.id, it.content, it.isFavorite) })
     }
 
     suspend fun addNote(content: String) {
-        val success = apiClient.addNote(CreateNoteBody(content))
+        val success = apiClient.addNote(CreateNoteBody(content,false))
         if (success) syncNotes()
+    }
+
+    suspend fun toggleFavorite(note: NoteModel) {
+        val newValue = !note.isFavorite
+        val success = apiClient.updateFavorite(note.id, newValue)
+        if (success) {
+            noteDao.updateFavorite(note.id, newValue)
+        }
     }
 
     suspend fun deleteNote(note: NoteModel) {
