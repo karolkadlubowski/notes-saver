@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">My Application</string>
+    <string name="fav_label">Ulubione</string>
+    <string name="all_notes_label">Wszystkie notatki</string>
+    <string name="note_content_label">Treść notatki</string>
 </resources>

@@ -1,19 +1,39 @@
 package com.example.myapplication.screen.notes
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeGestures
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation.Companion.keyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.MainViewModel
+import com.example.myapplication.R
 import com.example.myapplication.screen.notes.components.DismissableNote
 import org.koin.androidx.compose.koinViewModel
 
@@ -47,7 +67,7 @@ fun NotesScreen(
             if (favoriteNotes.isNotEmpty()) {
                 item {
                     Text(
-                        text = "Ulubione",
+                        text = stringResource(R.string.fav_label),
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 4.dp)
                     )
@@ -64,7 +84,7 @@ fun NotesScreen(
 
             item {
                 Text(
-                    text = "Wszystkie notatki",
+                    text = stringResource(R.string.all_notes_label),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 4.dp)
                 )
@@ -92,7 +112,7 @@ fun NotesScreen(
                 ),
             value = input,
             onValueChange = { input = it },
-            label = { Text("Treść notatki") },
+            label = { Text(stringResource(R.string.note_content_label)) },
             keyboardActions = KeyboardActions(
                 onSend = {
                     if (input.isNotBlank()) {
