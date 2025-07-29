@@ -8,17 +8,20 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NoteDao {
-    @Query("SELECT * FROM notes")
+    @Query("SELECT * FROM notes WHERE syncStatus != 'DELETED'")
     fun getAllNotesFlow(): Flow<List<NoteModel>>
 
-    @Query("SELECT * FROM notes")
+    @Query("SELECT * FROM notes WHERE syncStatus != 'DELETED'")
     fun getAllNotes(): List<NoteModel>
 
-    @Upsert()
+    @Query("SELECT * FROM notes WHERE syncStatus != 'SYNCED'")
+    suspend fun getPendingNotes(): List<NoteModel>
+
+    @Upsert
     suspend fun upsertAll(notes: List<NoteModel>)
 
-    @Query("UPDATE notes SET isFavorite = :isFavorite WHERE id = :id")
-    suspend fun updateFavorite(id: Long, isFavorite: Boolean)
+    @Upsert
+    suspend fun upsert(note: NoteModel)
 
     @Query("DELETE FROM notes WHERE id = :id")
     suspend fun deleteById(id: Long)

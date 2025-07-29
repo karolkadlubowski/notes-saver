@@ -21,8 +21,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,26 +35,30 @@ import androidx.compose.ui.unit.dp
 import com.example.data.models.NoteModel
 
 @Composable
-fun DismissableNote(modifier: Modifier = Modifier, note: NoteModel, onDismiss: () -> Unit,
-                    onToggleFavorite: () -> Unit = {}) {
+fun DismissableNote(
+    modifier: Modifier = Modifier,
+    note: NoteModel,
+    onDismiss: () -> Unit,
+    onToggleFavorite: () -> Unit = {}
+) {
     val density = LocalDensity.current
-    val confirmValueChange = { it: SwipeToDismissBoxValue -> it == SwipeToDismissBoxValue.StartToEnd }
-    val positionalThreshold = { it: Float -> it / 3 * 2}
+
     val dismissState = remember {
         SwipeToDismissBoxState(
             initialValue = SwipeToDismissBoxValue.Settled,
             density = density,
-            confirmValueChange = confirmValueChange,
-            positionalThreshold = positionalThreshold
+            confirmValueChange = { value -> value == SwipeToDismissBoxValue.StartToEnd },
+            positionalThreshold = { it * 2 / 3 }
         )
     }
-    val backgroundColor by
-        rememberUpdatedState(
-            when (dismissState.dismissDirection) {
-                SwipeToDismissBoxValue.StartToEnd -> lerp(Color.Transparent, Color.Red, dismissState.progress)
-                else -> Color.Transparent
-            }
-        )
+
+    val backgroundColor by rememberUpdatedState(
+        when (dismissState.dismissDirection) {
+            SwipeToDismissBoxValue.StartToEnd -> lerp(Color.Transparent, Color.Red, dismissState.progress)
+            else -> Color.Transparent
+        }
+    )
+
     if (dismissState.currentValue == SwipeToDismissBoxValue.StartToEnd) {
         LaunchedEffect(note.id) {
             onDismiss()
@@ -65,12 +71,11 @@ fun DismissableNote(modifier: Modifier = Modifier, note: NoteModel, onDismiss: (
         enableDismissFromEndToStart = false,
         backgroundContent = {
             Box(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                        .clip(MaterialTheme.shapes.medium)
-                        .background(backgroundColor),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                    .clip(MaterialTheme.shapes.medium)
+                    .background(backgroundColor),
                 contentAlignment = Alignment.CenterEnd,
             ) {
                 Icon(
@@ -106,5 +111,6 @@ fun DismissableNote(modifier: Modifier = Modifier, note: NoteModel, onDismiss: (
                     )
                 }
             }
-        }    }
+        }
+    }
 }

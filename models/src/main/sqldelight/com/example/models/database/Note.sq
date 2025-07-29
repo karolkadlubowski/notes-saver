@@ -21,3 +21,6 @@ updateFavorite:
 UPDATE note
 SET is_favorite = ?
 WHERE id = ?;
+
+lastInsertId:
+SELECT last_insert_rowid();

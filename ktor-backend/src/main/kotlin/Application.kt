@@ -45,7 +45,8 @@ fun Application.module() {
 
         post<CreateNoteBody>("/note") { note ->
             database.noteQueries.insert(note.content)
-            call.respond(HttpStatusCode.Created)
+            val id = database.noteQueries.lastInsertId().executeAsOne()
+            call.respond(HttpStatusCode.Created, id)
         }
 
         patch("/note/{id}/favorite") {

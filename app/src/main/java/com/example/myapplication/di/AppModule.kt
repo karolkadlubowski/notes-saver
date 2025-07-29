@@ -2,7 +2,7 @@ package com.example.myapplication.di
 
 import android.app.Application
 import androidx.room.Room
-import com.example.data.AppDatabase
+import com.example.data.database.AppDatabase
 import com.example.data.dao.NoteDao
 import com.example.data.repository.NoteRepository
 import com.example.ktor_client.ApiClient
@@ -15,7 +15,6 @@ val appModule = module {
 
     single {
         Room.databaseBuilder(get<Application>(), AppDatabase::class.java, "notes_db")
-            .fallbackToDestructiveMigration(true)//TODO
             .build()
     }
 

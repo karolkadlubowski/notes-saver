@@ -53,7 +53,7 @@ fun NotesScreen(
                     )
                 }
 
-                items(favoriteNotes) { note ->
+                items(favoriteNotes, key = { "fav" + it.id }) { note ->
                     DismissableNote(
                         note = note,
                         onDismiss = { viewModel.deleteNote(note) },
@@ -70,7 +70,7 @@ fun NotesScreen(
                 )
             }
 
-            items(allNotes) { note ->
+            items(allNotes, key = { it.id }) { note ->
                 DismissableNote(
                     note = note,
                     onDismiss = { viewModel.deleteNote(note) },
