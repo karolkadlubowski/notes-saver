@@ -5,12 +5,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.dp
 import com.example.myapplication.MainViewModel
 import com.example.myapplication.screen.notes.components.DismissableNote
 import org.koin.androidx.compose.koinViewModel
@@ -27,6 +29,9 @@ fun NotesScreen(
     val imeInset = WindowInsets.ime.asPaddingValues()
     val navigationInset = WindowInsets.navigationBars.asPaddingValues()
 
+    val allNotes = notes
+    val favoriteNotes = notes.filter { it.isFavorite }
+
     Column(modifier = Modifier.fillMaxSize()) {
         var input by remember { mutableStateOf("") }
 
@@ -36,9 +41,36 @@ fun NotesScreen(
                 top = statusBarInset.calculateTopPadding(),
                 start = gestureInsets.calculateStartPadding(layoutDirection),
                 end = gestureInsets.calculateEndPadding(layoutDirection),
+                bottom = 8.dp
             ),
         ) {
-            items(notes) { note ->
+            if (favoriteNotes.isNotEmpty()) {
+                item {
+                    Text(
+                        text = "Ulubione",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 4.dp)
+                    )
+                }
+
+                items(favoriteNotes) { note ->
+                    DismissableNote(
+                        note = note,
+                        onDismiss = { viewModel.deleteNote(note) },
+                        onToggleFavorite = { viewModel.toggleFavorite(note) }
+                    )
+                }
+            }
+
+            item {
+                Text(
+                    text = "Wszystkie notatki",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 4.dp)
+                )
+            }
+
+            items(allNotes) { note ->
                 DismissableNote(
                     note = note,
                     onDismiss = { viewModel.deleteNote(note) },
